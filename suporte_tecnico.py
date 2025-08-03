@@ -1,15 +1,30 @@
+#!/usr/bin/env python3
+"""
+Sistema de Suporte Técnico - Arquivo Principal
+
+Sistema automatizado para resolução de problemas comuns em computadores Windows.
+Desenvolvido para facilitar o suporte técnico em ambientes corporativos.
+
+Author: Fernando César
+Version: 1.0.0
+License: MIT
+"""
+
 import os
-import subprocess
 import sys
 import time
-import psutil
+import logging
+from typing import NoReturn
 
 
-def exibir_menu():
+def exibir_menu() -> None:
     """Exibe o menu principal do sistema"""
-    print("=" * 60)
-    print("           SISTEMA DE SUPORTE TÉCNICO")
-    print("=" * 60)
+    width = UI_CONFIG["menu_width"]
+
+    print("=" * width)
+    print(f"{APP_NAME:^{width}}")
+    print(f"Versão {VERSION}:^{width}")
+    print("=" * width)
     print()
     print("Escolha o problema que você está enfrentando:")
     print()
@@ -22,7 +37,7 @@ def exibir_menu():
     print("7. 🔧 Problemas de hardware (Em breve)")
     print("0. ❌ Sair")
     print()
-    print("=" * 60)
+    print("=" * width)
 
 
 def verificar_tipo_conexao():
@@ -299,29 +314,6 @@ def resolver_computador_lento():
     time.sleep(2)
 
     try:
-        # 1. Verificar espaço em disco
-        verificar_espaco_disco()
-
-        # 2. Limpar arquivos temporários
-        limpar_arquivos_temporarios()
-
-        # 3. Limpar cache do sistema
-        limpar_cache_sistema()
-
-        # 4. Verificar processos pesados
-        verificar_processos_pesados()
-
-        # 5. Opção de verificação de integridade
-        print("\n" + "=" * 50)
-        print("🛡️ VERIFICAÇÃO DE INTEGRIDADE (OPCIONAL)")
-        print("=" * 50)
-        print("\n⚠️ A verificação de integridade pode demorar 15-30 minutos.")
-        print("\n💡 Recomendado apenas se o problema persistir.")
-
-        # Execução automática sem confirmação
-        print("\n🔧 Executando verificação rápida...")
-        verificar_integridade_sistema()
-
         print("\n" + "=" * 60)
         print("✅ OTIMIZAÇÃO CONCLUÍDA")
         print("=" * 60)
@@ -337,187 +329,6 @@ def resolver_computador_lento():
         print(f"\n❌ Erro durante otimização: {str(e)}")
 
     time.sleep(4)  # Pausa automática em vez de input
-
-
-def verificar_espaco_disco():
-    """Verifica espaço disponível no disco C:"""
-    print("\n💾 Verificando espaço em disco...")
-
-    try:
-        import shutil
-
-        total, usado, livre = shutil.disk_usage("C:\\")
-
-        total_gb = total // (1024**3)
-        usado_gb = usado // (1024**3)
-        livre_gb = livre // (1024**3)
-        percentual_usado = (usado / total) * 100
-
-        print(f"\n📊 Disco C:")
-        print(f"   • Total: {total_gb} GB")
-        print(f"   • Usado: {usado_gb} GB ({percentual_usado:.1f}%)")
-        print(f"   • Livre: {livre_gb} GB")
-
-        if percentual_usado > 90:
-            print("\n⚠️ ATENÇÃO: Disco quase cheio! Isso pode causar lentidão.")
-        elif percentual_usado > 80:
-            print("\n💡 Disco com pouco espaço. Considere fazer limpeza.")
-        else:
-            print("\n✅ Espaço em disco adequado.")
-
-    except Exception as e:
-        print(f"\n❌ Erro ao verificar espaço: {str(e)}")
-
-
-def limpar_arquivos_temporarios():
-    """Remove arquivos temporários do sistema"""
-    print("\n🗑️ Limpando arquivos temporários...")
-
-    import tempfile
-    import glob
-
-    arquivos_removidos = 0
-
-    try:
-        # Pasta TEMP do usuário
-        temp_user = tempfile.gettempdir()
-        print(f"\n📁 Limpando: {temp_user}")
-
-        for arquivo in glob.glob(os.path.join(temp_user, "*")):
-            try:
-                if os.path.isfile(arquivo):
-                    os.remove(arquivo)
-                    arquivos_removidos += 1
-                elif os.path.isdir(arquivo):
-                    import shutil
-
-                    shutil.rmtree(arquivo, ignore_errors=True)
-                    arquivos_removidos += 1
-            except:
-                continue  # Ignora arquivos em uso
-
-        # Pasta Windows\Temp (se acessível)
-        windows_temp = "C:\\Windows\\Temp"
-        if os.path.exists(windows_temp):
-            print(f"\n📁 Limpando: {windows_temp}")
-            for arquivo in glob.glob(os.path.join(windows_temp, "*")):
-                try:
-                    if os.path.isfile(arquivo):
-                        os.remove(arquivo)
-                        arquivos_removidos += 1
-                except:
-                    continue
-
-        print(f"\n✅ {arquivos_removidos} itens temporários removidos.")
-
-    except Exception as e:
-        print(f"\n❌ Erro na limpeza: {str(e)}")
-
-
-def limpar_cache_sistema():
-    """Limpa cache do sistema Windows"""
-    print("\n🧹 Limpando cache do sistema...")
-
-    try:
-        # Limpar cache de thumbnails
-        cache_thumbnails = os.path.expanduser(
-            "~\\AppData\\Local\\Microsoft\\Windows\\Explorer"
-        )
-        if os.path.exists(cache_thumbnails):
-            print("\n📸 Limpando cache de thumbnails...")
-            for arquivo in glob.glob(os.path.join(cache_thumbnails, "thumbcache_*.db")):
-                try:
-                    os.remove(arquivo)
-                except:
-                    continue
-
-        # Executar limpeza de disco do Windows
-        print("\n🔄 Executando limpeza de disco do Windows...")
-        subprocess.run("cleanmgr /sagerun:1", shell=True, capture_output=True)
-
-        print("\n✅ Cache do sistema limpo.")
-
-    except Exception as e:
-        print(f"\n❌ Erro na limpeza de cache: {str(e)}")
-
-
-def verificar_processos_pesados():
-    """Verifica processos que consomem muitos recursos"""
-    print("\n🔍 Analisando processos do sistema...")
-
-    try:
-        processos_pesados = []
-
-        for processo in psutil.process_iter(
-            ["pid", "name", "cpu_percent", "memory_percent"]
-        ):
-            try:
-                info = processo.info
-                if info["cpu_percent"] > 10 or info["memory_percent"] > 5:
-                    processos_pesados.append(info)
-            except:
-                continue
-
-        if processos_pesados:
-            print("\n📊 Processos que consomem mais recursos:")
-            for proc in sorted(
-                processos_pesados, key=lambda x: x["cpu_percent"], reverse=True
-            )[:5]:
-                print(
-                    f"   • {proc['name']}: CPU {proc['cpu_percent']:.1f}%, RAM {proc['memory_percent']:.1f}%"
-                )
-        else:
-            print("\n✅ Nenhum processo pesado detectado.")
-
-    except Exception as e:
-        print(f"\n❌ Erro ao verificar processos: {str(e)}")
-
-
-def verificar_integridade_sistema():
-    """Executa verificação de integridade do sistema"""
-    print("\n🛡️ Verificando integridade do sistema...")
-    print("\n⏰ Esta operação pode demorar 15-30 minutos.")
-
-    try:
-        # SFC Scan
-        print("\n🔍 Executando SFC /scannow...")
-        processo_sfc = subprocess.run(
-            "sfc /scannow",
-            shell=True,
-            capture_output=True,
-            text=True,
-            encoding="cp1252",
-            timeout=1800,  # 30 minutos
-        )
-
-        if processo_sfc.returncode == 0:
-            print("\n✅ Verificação SFC concluída.")
-        else:
-            print("\n⚠️ Verificação SFC concluída com avisos.")
-
-        # DISM
-        print("\n🔧 Executando DISM RestoreHealth...")
-        processo_dism = subprocess.run(
-            "DISM /Online /Cleanup-Image /RestoreHealth",
-            shell=True,
-            capture_output=True,
-            text=True,
-            encoding="cp1252",
-            timeout=1800,
-        )
-
-        if processo_dism.returncode == 0:
-            print("\n✅ Verificação DISM concluída.")
-        else:
-            print("\n⚠️ Verificação DISM concluída com avisos.")
-
-        print("\n📋 Verificação de integridade concluída.")
-
-    except subprocess.TimeoutExpired:
-        print("\n⏰ Verificação demorou mais que 30 minutos.")
-        print("   O processo pode ter sido concluído mesmo assim.")
-    except Exception as e:
-        print(f"\n❌ Erro na verificação: {str(e)}")
 
 
 def exibir_ip_computador():
@@ -1076,45 +887,100 @@ def exibir_info_dominio():
         print(f"   ❌ Erro ao obter informações de domínio: {str(e)}")
 
 
-def main():
+def exibir_funcionalidade_em_breve() -> None:
+    """Exibe mensagem para funcionalidades em desenvolvimento"""
+    print("\n🚧 Esta funcionalidade ainda está em desenvolvimento!")
+    print("\n💡 Por enquanto, use as opções 1, 2, 3, 4 e 5 para resolver problemas.")
+    time.sleep(UI_CONFIG["auto_return_delay"])
+
+
+def processar_opcao(opcao: str) -> bool:
+    """Processa a opção escolhida pelo usuário
+
+    Args:
+        opcao: Opção escolhida pelo usuário
+
+    Returns:
+        False se deve sair do programa, True caso contrário
+    """
+    logger = logging.getLogger(__name__)
+
+    try:
+        if opcao == "1":
+            logger.info("Executando resolução de problemas de rede")
+            resolver_erro_rede()
+        elif opcao == "2":
+            logger.info("Executando flush DNS")
+            executar_flush_dns()
+        elif opcao == "3":
+            logger.info("Verificando informações da rede")
+            verificar_informacoes_rede()
+        elif opcao == "4":
+            logger.info("Resolvendo problemas de computador lento")
+            resolver_computador_lento()
+        elif opcao == "5":
+            logger.info("Reiniciando spooler de impressão")
+            reiniciar_spooler_impressao()
+        elif opcao in ["6", "7"]:
+            logger.info(f"Funcionalidade {opcao} ainda em desenvolvimento")
+            exibir_funcionalidade_em_breve()
+        elif opcao == "0":
+            logger.info("Encerrando sistema")
+            print("\n👋 Obrigado por usar o Sistema de Suporte Técnico!")
+            print(f"\n🔧 Mantenha seu computador sempre otimizado!")
+            time.sleep(UI_CONFIG["auto_return_delay"])
+            return False
+        else:
+            print("\n❌ Opção inválida!")
+            print("\n💡 Digite apenas o número da opção desejada (0-7).")
+            time.sleep(UI_CONFIG["auto_return_delay"])
+
+    except Exception as e:
+        logger.error(f"Erro ao processar opção {opcao}: {e}")
+        print(f"\n❌ Erro inesperado: {str(e)}")
+        print("\n💡 Tente novamente ou reinicie o programa.")
+        time.sleep(UI_CONFIG["auto_return_delay"])
+
+    return True
+
+
+def main() -> NoReturn:
     """Função principal do sistema"""
+    # Configura logging
+    configurar_logging()
+    logger = logging.getLogger(__name__)
+
+    logger.info(f"Iniciando {APP_NAME} v{VERSION}")
+
+    # Exibe aviso sobre privilégios de administrador
+    exibir_aviso_admin()
+
+    opcoes_validas = ["0", "1", "2", "3", "4", "5", "6", "7"]
+
     while True:
         try:
             exibir_menu()
             opcao = input("Digite o número da sua escolha: ").strip()
 
-            if opcao == "1":
-                resolver_erro_rede()
-            elif opcao == "2":
-                executar_flush_dns()
-            elif opcao == "3":
-                verificar_informacoes_rede()
-            elif opcao == "4":
-                resolver_computador_lento()
-            elif opcao == "5":
-                reiniciar_spooler_impressao()
-            elif opcao in ["6", "7"]:
-                print("\n🚧 Esta funcionalidade ainda está em desenvolvimento!")
-                print(
-                    "\n💡 Por enquanto, use as opções 1, 2, 3, 4 e 5 para resolver problemas."
-                )
-                time.sleep(2)
-            elif opcao == "0":
-                print("\n👋 Obrigado por usar o Sistema de Suporte Técnico!")
-                print("\n🔧 Mantenha seu computador sempre otimizado!")
-                time.sleep(2)
-                break
-            else:
+            if not validar_entrada_menu(opcao, opcoes_validas):
                 print("\n❌ Opção inválida!")
                 print("\n💡 Digite apenas o número da opção desejada (0-7).")
-                time.sleep(2)
+                time.sleep(UI_CONFIG["auto_return_delay"])
+                continue
+
+            if not processar_opcao(opcao):
+                break
 
         except KeyboardInterrupt:
+            logger.info("Sistema encerrado pelo usuário (Ctrl+C)")
             print("\n\n👋 Sistema encerrado.")
             break
         except Exception as e:
+            logger.error(f"Erro inesperado no loop principal: {e}")
             print(f"\n❌ Erro inesperado: {str(e)}")
-            time.sleep(3)
+            time.sleep(UI_CONFIG["auto_return_delay"])
+
+    logger.info("Sistema encerrado")
 
 
 if __name__ == "__main__":
@@ -1123,7 +989,33 @@ if __name__ == "__main__":
         print("❌ Este sistema foi desenvolvido para Windows.")
         sys.exit(1)
 
-    # Verifica se psutil está instalado
+    # Importa configurações
+    try:
+        from config import UI_CONFIG, VERSION, APP_NAME
+    except ImportError:
+        print("❌ Arquivo de configuração não encontrado.")
+        sys.exit(1)
+
+    # Importa módulos do sistema
+    try:
+        from modules.utils import (
+            configurar_logging,
+            validar_entrada_menu,
+            verificar_privilegios_admin,
+            exibir_aviso_admin,
+        )
+        from modules.network import resolver_erro_rede, executar_flush_dns
+        from modules.diagnostics import verificar_informacoes_rede
+        from modules.system import (
+            resolver_computador_lento,
+            reiniciar_spooler_impressao,
+        )
+    except ImportError as e:
+        print(f"❌ Erro ao importar módulos: {e}")
+        print("💡 Verifique se todos os arquivos estão presentes.")
+        sys.exit(1)
+
+    # Verifica dependências
     try:
         import psutil
     except ImportError:

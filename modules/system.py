@@ -3,6 +3,8 @@ import psutil
 import os
 import time
 import glob
+import shutil
+import tempfile
 from .utils import limpar_tela, corrigir_encoding_windows, executar_comando_seguro
 
 # Todas as funções do sistema aqui:
@@ -12,6 +14,230 @@ from .utils import limpar_tela, corrigir_encoding_windows, executar_comando_segu
 # - verificar_processos_pesados()
 # - verificar_integridade_sistema()
 # - reiniciar_spooler_impressao()
+
+
+def resolver_computador_lento():
+    """Resolve problemas de lentidão do computador"""
+    print("=" * 60)
+    print("           RESOLVENDO LENTIDÃO DO COMPUTADOR")
+    print("=" * 60)
+
+    print("\n🔍 Analisando sistema...")
+    time.sleep(2)
+
+    try:
+        # 1. Verificar espaço em disco
+        verificar_espaco_disco()
+
+        # 2. Limpar arquivos temporários
+        limpar_arquivos_temporarios()
+
+        # 3. Limpar cache do sistema
+        limpar_cache_sistema()
+
+        # 4. Verificar processos pesados
+        verificar_processos_pesados()
+
+        # 5. Opção de verificação de integridade
+        print("\n" + "=" * 50)
+        print("🛡️ VERIFICAÇÃO DE INTEGRIDADE (OPCIONAL)")
+        print("=" * 50)
+        print("\n⚠️ A verificação de integridade pode demorar 15-30 minutos.")
+        print("\n💡 Recomendado apenas se o problema persistir.")
+
+        # Execução automática sem confirmação
+        print("\n🔧 Executando verificação rápida...")
+        verificar_integridade_sistema()
+
+        print("\n" + "=" * 60)
+        print("✅ OTIMIZAÇÃO CONCLUÍDA")
+        print("=" * 60)
+        print("\n🎯 Ações realizadas:")
+        print("   • Verificação de espaço em disco")
+        print("   • Limpeza de arquivos temporários")
+        print("   • Limpeza de cache do sistema")
+        print("   • Análise de processos")
+        print("   • Verificação de integridade")
+        print("\n💡 Reinicie o computador para aplicar todas as otimizações.")
+
+    except Exception as e:
+        print(f"\n❌ Erro durante otimização: {str(e)}")
+
+    time.sleep(4)  # Pausa automática
+
+
+def verificar_espaco_disco():
+    """Verifica espaço disponível no disco C:"""
+    print("\n💾 Verificando espaço em disco...")
+
+    try:
+        total, usado, livre = shutil.disk_usage("C:\\")
+
+        total_gb = total // (1024**3)
+        usado_gb = usado // (1024**3)
+        livre_gb = livre // (1024**3)
+        percentual_usado = (usado / total) * 100
+
+        print(f"\n📊 Disco C:")
+        print(f"   • Total: {total_gb} GB")
+        print(f"   • Usado: {usado_gb} GB ({percentual_usado:.1f}%)")
+        print(f"   • Livre: {livre_gb} GB")
+
+        if percentual_usado > 90:
+            print("\n⚠️ ATENÇÃO: Disco quase cheio! Isso pode causar lentidão.")
+        elif percentual_usado > 80:
+            print("\n💡 Disco com pouco espaço. Considere fazer limpeza.")
+        else:
+            print("\n✅ Espaço em disco adequado.")
+
+    except Exception as e:
+        print(f"\n❌ Erro ao verificar espaço: {str(e)}")
+
+
+def limpar_arquivos_temporarios():
+    """Remove arquivos temporários do sistema"""
+    print("\n🗑️ Limpando arquivos temporários...")
+
+    arquivos_removidos = 0
+
+    try:
+        # Pasta TEMP do usuário
+        temp_user = tempfile.gettempdir()
+        print(f"\n📁 Limpando: {temp_user}")
+
+        for arquivo in glob.glob(os.path.join(temp_user, "*")):
+            try:
+                if os.path.isfile(arquivo):
+                    os.remove(arquivo)
+                    arquivos_removidos += 1
+                elif os.path.isdir(arquivo):
+                    shutil.rmtree(arquivo, ignore_errors=True)
+                    arquivos_removidos += 1
+            except:
+                continue  # Ignora arquivos em uso
+
+        # Pasta Windows\Temp (se acessível)
+        windows_temp = "C:\\Windows\\Temp"
+        if os.path.exists(windows_temp):
+            print(f"\n📁 Limpando: {windows_temp}")
+            for arquivo in glob.glob(os.path.join(windows_temp, "*")):
+                try:
+                    if os.path.isfile(arquivo):
+                        os.remove(arquivo)
+                        arquivos_removidos += 1
+                except:
+                    continue
+
+        print(f"\n✅ {arquivos_removidos} itens temporários removidos.")
+
+    except Exception as e:
+        print(f"\n❌ Erro na limpeza: {str(e)}")
+
+
+def limpar_cache_sistema():
+    """Limpa cache do sistema Windows"""
+    print("\n🧹 Limpando cache do sistema...")
+
+    try:
+        # Limpar cache de thumbnails
+        cache_thumbnails = os.path.expanduser(
+            "~\\AppData\\Local\\Microsoft\\Windows\\Explorer"
+        )
+        if os.path.exists(cache_thumbnails):
+            print("\n📸 Limpando cache de thumbnails...")
+            for arquivo in glob.glob(os.path.join(cache_thumbnails, "thumbcache_*.db")):
+                try:
+                    os.remove(arquivo)
+                except:
+                    continue
+
+        # Executar limpeza de disco do Windows
+        print("\n🔄 Executando limpeza de disco do Windows...")
+        subprocess.run("cleanmgr /sagerun:1", shell=True, capture_output=True)
+
+        print("\n✅ Cache do sistema limpo.")
+
+    except Exception as e:
+        print(f"\n❌ Erro na limpeza de cache: {str(e)}")
+
+
+def verificar_processos_pesados():
+    """Verifica processos que consomem muitos recursos"""
+    print("\n🔍 Analisando processos do sistema...")
+
+    try:
+        processos_pesados = []
+
+        for processo in psutil.process_iter(
+            ["pid", "name", "cpu_percent", "memory_percent"]
+        ):
+            try:
+                info = processo.info
+                if info["cpu_percent"] > 10 or info["memory_percent"] > 5:
+                    processos_pesados.append(info)
+            except:
+                continue
+
+        if processos_pesados:
+            print("\n📊 Processos que consomem mais recursos:")
+            for proc in sorted(
+                processos_pesados, key=lambda x: x["cpu_percent"], reverse=True
+            )[:5]:
+                print(
+                    f"   • {proc['name']}: CPU {proc['cpu_percent']:.1f}%, RAM {proc['memory_percent']:.1f}%"
+                )
+        else:
+            print("\n✅ Nenhum processo pesado detectado.")
+
+    except Exception as e:
+        print(f"\n❌ Erro ao verificar processos: {str(e)}")
+
+
+def verificar_integridade_sistema():
+    """Executa verificação de integridade do sistema"""
+    print("\n🛡️ Verificando integridade do sistema...")
+    print("\n⏰ Esta operação pode demorar 15-30 minutos.")
+
+    try:
+        # SFC Scan
+        print("\n🔍 Executando SFC /scannow...")
+        processo_sfc = subprocess.run(
+            "sfc /scannow",
+            shell=True,
+            capture_output=True,
+            text=True,
+            encoding="cp1252",
+            timeout=1800,  # 30 minutos
+        )
+
+        if processo_sfc.returncode == 0:
+            print("\n✅ Verificação SFC concluída.")
+        else:
+            print("\n⚠️ Verificação SFC concluída com avisos.")
+
+        # DISM
+        print("\n🔧 Executando DISM RestoreHealth...")
+        processo_dism = subprocess.run(
+            "DISM /Online /Cleanup-Image /RestoreHealth",
+            shell=True,
+            capture_output=True,
+            text=True,
+            encoding="cp1252",
+            timeout=1800,
+        )
+
+        if processo_dism.returncode == 0:
+            print("\n✅ Verificação DISM concluída.")
+        else:
+            print("\n⚠️ Verificação DISM concluída com avisos.")
+
+        print("\n📋 Verificação de integridade concluída.")
+
+    except subprocess.TimeoutExpired:
+        print("\n⏰ Verificação demorou mais que 30 minutos.")
+        print("   O processo pode ter sido concluído mesmo assim.")
+    except Exception as e:
+        print(f"\n❌ Erro na verificação: {str(e)}")
 
 
 def reiniciar_spooler_impressao():
