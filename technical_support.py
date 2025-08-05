@@ -6,7 +6,7 @@ Sistema automatizado para resolução de problemas comuns em computadores Window
 Desenvolvido para facilitar o suporte técnico em ambientes corporativos.
 
 Author: Fernando César
-Version: 1.0.0
+Version: 1.1.0
 License: MIT
 """
 
@@ -33,8 +33,8 @@ def exibir_menu() -> None:
     print("3. 📊 Verificar informações da rede")
     print("4. 🐌 Computador lento")
     print("5. 🖨️ Reiniciar spooler de impressão")
-    print("6. 💻 Problemas com programas (Em breve)")
-    print("7. 🔧 Problemas de hardware (Em breve)")
+    print("6. 💻 Problemas com programas")
+    print("7. 📋 Gerar relatório de diagnóstico")
     print("0. ❌ Sair")
     print()
     print("=" * width)
@@ -921,9 +921,12 @@ def processar_opcao(opcao: str) -> bool:
         elif opcao == "5":
             logger.info("Reiniciando spooler de impressão")
             reiniciar_spooler_impressao()
-        elif opcao in ["6", "7"]:
-            logger.info(f"Funcionalidade {opcao} ainda em desenvolvimento")
-            exibir_funcionalidade_em_breve()
+        elif opcao == "6":
+            logger.info("Resolvendo problemas com programas")
+            resolver_problemas_programas()
+        elif opcao == "7":
+            logger.info("Gerando relatório de diagnóstico")
+            gerar_relatorio_diagnostico()
         elif opcao == "0":
             logger.info("Encerrando sistema")
             print("\n👋 Obrigado por usar o Sistema de Suporte Técnico!")
@@ -942,6 +945,63 @@ def processar_opcao(opcao: str) -> bool:
         time.sleep(UI_CONFIG["auto_return_delay"])
 
     return True
+
+
+def gerar_relatorio_diagnostico() -> None:
+    """Interface para geração de relatórios de diagnóstico"""
+    print("=" * 60)
+    print("           GERAR RELATÓRIO DE DIAGNÓSTICO")
+    print("=" * 60)
+
+    print("\n📋 Escolha o tipo de relatório:")
+    print("1. 📄 Relatório rápido (texto)")
+    print("2. 📊 Relatório completo (texto)")
+    print("3. 🔗 Relatório completo (HTML)")
+    print("4. 📋 Relatório completo (JSON)")
+    print("0. ⬅️ Voltar")
+
+    while True:
+        try:
+            opcao = input("\nDigite sua escolha: ").strip()
+
+            if opcao == "1":
+                print("\n🔍 Gerando relatório rápido...")
+                caminho = gerar_relatorio_rapido()
+                if caminho:
+                    print(f"\n✅ Relatório salvo em: {caminho}")
+                break
+            elif opcao == "2":
+                print("\n🔍 Gerando relatório completo (texto)...")
+                caminho = gerar_relatorio_completo("texto")
+                if caminho:
+                    print(f"\n✅ Relatório salvo em: {caminho}")
+                break
+            elif opcao == "3":
+                print("\n🔍 Gerando relatório completo (HTML)...")
+                caminho = gerar_relatorio_completo("html")
+                if caminho:
+                    print(f"\n✅ Relatório salvo em: {caminho}")
+                    print("💡 Abra o arquivo HTML no seu navegador para visualizar")
+                break
+            elif opcao == "4":
+                print("\n🔍 Gerando relatório completo (JSON)...")
+                caminho = gerar_relatorio_completo("json")
+                if caminho:
+                    print(f"\n✅ Relatório salvo em: {caminho}")
+                break
+            elif opcao == "0":
+                break
+            else:
+                print("\n❌ Opção inválida! Digite 0-4.")
+
+        except KeyboardInterrupt:
+            print("\n\n⬅️ Operação cancelada.")
+            break
+        except Exception as e:
+            print(f"\n❌ Erro: {str(e)}")
+            break
+
+    time.sleep(3)
 
 
 def main() -> NoReturn:
@@ -1010,6 +1070,8 @@ if __name__ == "__main__":
             resolver_computador_lento,
             reiniciar_spooler_impressao,
         )
+        from modules.programs import resolver_problemas_programas
+        from modules.reports import gerar_relatorio_completo, gerar_relatorio_rapido
     except ImportError as e:
         print(f"❌ Erro ao importar módulos: {e}")
         print("💡 Verifique se todos os arquivos estão presentes.")

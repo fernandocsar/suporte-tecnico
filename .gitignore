@@ -156,3 +156,10 @@ $RECYCLE.BIN/
 # Logs específicos do projeto
 *.log
 logs/
+
+# Relatórios gerados pelo sistema
+reports/*.txt
+reports/*.html
+reports/*.json
+# Mantém apenas o .gitkeep na pasta reports
+!reports/.gitkeep

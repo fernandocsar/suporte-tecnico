@@ -9,14 +9,14 @@ with open("requirements.txt", "r", encoding="utf-8") as fh:
     ]
 
 setup(
-    name="sistema-suporte-tecnico",
-    version="1.0.0",
-    author="Seu Nome",
-    author_email="seu.email@exemplo.com",
+    name="technical-support-system",
+    version="1.1.0",
+    author="Fernando César",
+    author_email="fernando.cesar@exemplo.com",
     description="Sistema automatizado para resolução de problemas comuns em computadores Windows",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/seu-usuario/suporte-tecnico",
+    url="https://github.com/fernandocsar/suporte-tecnico",
     packages=find_packages(),
     classifiers=[
         "Development Status :: 4 - Beta",
@@ -36,13 +36,13 @@ setup(
     install_requires=requirements,
     entry_points={
         "console_scripts": [
-            "suporte-tecnico=suporte_tecnico:main",
+            "technical-support=technical_support:main",
         ],
     },
-    keywords="suporte tecnico windows automacao ti sistema",
+    keywords="technical support windows automation it system",
     project_urls={
-        "Bug Reports": "https://github.com/seu-usuario/suporte-tecnico/issues",
-        "Source": "https://github.com/seu-usuario/suporte-tecnico",
-        "Documentation": "https://github.com/seu-usuario/suporte-tecnico#readme",
+        "Bug Reports": "https://github.com/fernandocsar/suporte-tecnico/issues",
+        "Source": "https://github.com/fernandocsar/suporte-tecnico",
+        "Documentation": "https://github.com/fernandocsar/suporte-tecnico#readme",
     },
 )
