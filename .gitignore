@@ -169,7 +169,6 @@ reports/*.json
 
 # Ignora todo o código fonte
 *.py
-!build_exe.py
 
 # Ignora módulos
 modules/
