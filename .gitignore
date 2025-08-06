@@ -10,7 +10,6 @@ __pycache__/
 .Python
 build/
 develop-eggs/
-dist/
 downloads/
 eggs/
 .eggs/
@@ -163,3 +162,40 @@ reports/*.html
 reports/*.json
 # Mantém apenas o .gitkeep na pasta reports
 !reports/.gitkeep
+
+# ========================================
+# CONFIGURAÇÃO PARA VERSIONAR APENAS O EXECUTÁVEL
+# ========================================
+
+# Ignora todo o código fonte
+*.py
+!build_exe.py
+
+# Ignora módulos
+modules/
+
+# Ignora configurações
+config.py
+setup.py
+requirements.txt
+
+# Ignora testes
+tests/
+
+# Ignora documentação
+README.md
+BUILD_INSTRUCTIONS.md
+CHANGELOG_EXECUTABLE.md
+
+# Ignora builds anteriores
+build/
+dist/
+# EXCEÇÃO: Permite apenas o executável final
+!dist/TechnicalSupport.exe
+
+# Ignora logs
+*.log
+
+# Ignora arquivos temporários
+*.tmp
+*.temp
