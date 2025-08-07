@@ -2,7 +2,7 @@
 
 ## 📦 Download
 
-**Versão Atual**: 1.1.0  
+**Versão Atual**: 1.1.1  
 **Tamanho**: ~7.2 MB  
 **Compatibilidade**: Windows 10/11
 
@@ -18,11 +18,21 @@
 
 ## ✨ Funcionalidades
 
-- 🔍 **Diagnóstico de Rede**: Ping, DNS, conectividade
-- 🖥️ **Diagnóstico de Sistema**: Processos, serviços, integridade
-- 🛠️ **Resolução de Problemas**: Correção automática de issues
-- 📊 **Relatórios**: Geração de relatórios em HTML, JSON e texto
-- 🔧 **Problemas com Programas**: Diagnóstico e correção de software
+### 🔍 Diagnósticos
+- **🌐 Problemas de rede**: Ping, DNS, conectividade, tipo de conexão (WiFi/Cabo)
+- **🔄 Flush DNS**: Limpeza de cache DNS
+- **📊 Informações da rede**: Configuração IP, interfaces, conectividade
+- **💾 Teste de disco**: Verificação de espaço, integridade, setores defeituosos, SMART, fragmentação
+
+### 🛠️ Resolução de Problemas
+- **🐌 Computador lento**: Otimização automática, limpeza de arquivos temporários, verificação de integridade
+- **🖨️ Spooler de impressão**: Reinicialização automática do serviço
+- **💻 Problemas com programas**: Verificação de processos travados, reparo de aplicações Windows, limpeza de registros
+
+### 📊 Relatórios
+- **📄 Relatório rápido**: Informações básicas em texto
+- **📊 Relatório completo**: Dados detalhados em texto, HTML ou JSON
+- **📋 Diagnóstico completo**: Análise abrangente do sistema
 
 ## ⚠️ Requisitos
 
